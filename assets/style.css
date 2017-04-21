@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css?family=Lato:300,400,700');
+
+body {
+  background: #2c3e50;
+  color: #ecf0f1;
+  font-family: Lato, sans-serif;
+}
+
+.container {
+  margin: 0 auto;
+  max-width: 800px;
+}
+
+#avgSleep {
+  max-width: 450px;
+  margin: 0 auto;
+}
+
+#bar {
+  height: 300px;
+}
+
+.main-title {
+  margin-top: 60px;
+  text-align: center;
+}
+
+.main-subtitle {
+  font-size: 20px;
+  text-align: center;
+}
+
+.hour-btn-container {
+  margin: 40px auto 0;
+  text-align: center;
+}
+
+.hour-btn {
+  background: none;
+  border: none;
+  color: rgba(236, 240, 241, 0.7);
+  cursor: pointer;
+  display: inline-block;
+  font-size: 18px;
+  font-weight: 300;
+  margin: 0 8px;
+  outline: none;
+  position: relative;
+  transition: 100ms;
+}
+
+.hour-btn:hover {
+  color: rgba(236, 240, 241, 1.0);
+}
+
+.hour-btn:hover:after {
+  background: rgba(236, 240, 241, 0.5);
+  content: "";
+  height: 3px;
+  position: absolute;
+  width: 30px;
+  left: 50%;
+  bottom: -10px;
+  transform: translateX(-50%);
+}
+
+.hour-btn.active {
+  color: rgba(236, 240, 241, 1.0);
+  font-weight: 600;
+}
+
+.hour-btn.active:after {
+  background: rgba(236, 240, 241, 1);
+  content: "";
+  height: 3px;
+  position: absolute;
+  width: 30px;
+  left: 50%;
+  bottom: -10px;
+  transform: translateX(-50%);
+}
+
+section {
+  margin: 150px auto;
+}
+
+p {
+  opacity: 0.8;
+  font-size: 18px;
+  font-weight: 300;
+  line-height: 1.5;
+}
