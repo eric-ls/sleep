@@ -5,6 +5,13 @@ const green = "#3DCC91";
 const purple = "#AD99FF";
 const orange = "#FFB366";
 
+const red_50 = "rgba(255, 115, 115, 0.5)";
+const blue_50 = "rgba(72, 175, 240, 0.5)";
+const yellow_50 = "rgba(255, 201, 64, 0.5)";
+const green_50 = "rgba(61, 204, 145, 0.5)";
+const purple_50 = "rgba(173, 153, 255, 0.5)";
+const orange_50 = "rgba(255, 179, 102, 0.5)";
+
 const black = "#2c3e50";
 const white = "#ecf0f1";
 
@@ -24,94 +31,146 @@ $(document).ready(() => {
   let g4 = document.getElementById("memory").getContext("2d");
   let selectedHour;
 
-  $(".hour-btn").click(function() {
-    $(".hour-btn").removeClass("active");
 
-    $(this).addClass("active")
-    selectedHour = $(this).attr("data-num")
-    const newData = barData[selectedHour];
-    console.log(newData)
+  $("#hour-select").change(function(e) {
+    selectedHour = parseInt($(this).val());
 
-    changeBar(newData);
+    $(".hour-success-btn").addClass("show-btn");
+
+    calculateAvgSleepColor(selectedHour);
   })
 
   let changeBar = (newData) => {
-    console.log(newData)
     immune_bar.config.data.datasets[0].data = newData;
     immune_bar.update(500);
   }
 
 
-  // Chart Configurations here
-  let avg_sleep_pie = new Chart(g0, {
-    type: "pie",
-    data: avg_sleep_data,
-    options: avg_sleep_options,
-  })
+  let animated_pie = false;
+  let animated_immune = false;
+  let animated_weight = false;
+  let animated_pvt = false;
+  let animated_memory = false;
 
+  const trigger_offset = 400;
 
-  let immune_bar = new Chart(g1, {
-    type: "bar",
-    data: immune_bar_data,
-    options: {
-      scales: {
-        yAxes: [{
-          ticks: {
-            beginAtZero:true
-          }
-        }]
-      }
+  let pie_trigger, immune_trigger, weight_trigger, pvt_trigger, memory_trigger;
+
+  let calculate_trigger_dist = () => {
+    pie_trigger = $("#avgSleep").offset().top - window.innerHeight + trigger_offset;
+    immune_trigger = $("#immune").offset().top - window.innerHeight + trigger_offset;
+    weight_trigger = $("#weight").offset().top - window.innerHeight + trigger_offset;
+    pvt_trigger = $("#pvt").offset().top - window.innerHeight + trigger_offset;
+    memory_trigger = $("#memory").offset().top - window.innerHeight + trigger_offset;
+  }
+
+  calculate_trigger_dist();
+  console.log(memory_trigger);
+
+  $(window).scroll(() => {
+    let dist = $(window).scrollTop();
+
+    if (!animated_pie && dist > pie_trigger) {
+      animated_pie = true;
+      let avg_sleep_pie = new Chart(g0, {
+        type: "doughnut",
+        data: avg_sleep_data,
+        options: avg_sleep_options,
+      })
+      $("#avgSleep").addClass("show-chart");
+      calculate_trigger_dist();
     }
-  });
 
-  let weight_bar = new Chart(g2, {
-    type: "bar",
-    data: weight_chart_data,
-    options: weight_chart_options,
-  });
+    if (!animated_immune && dist > immune_trigger) {
+      animated_immune = true;
+      let immune_bar = new Chart(g1, {
+        type: "bar",
+        data: immune_bar_data,
+        options: immune_bar_options,
+      });
+      $("#immune").addClass("show-chart");
+      calculate_trigger_dist();
+    }
 
-  let pvt_line = new Chart(g3, {
-    type: "line",
-    data: pvt_line_data,
-    options: pvt_line_options,
-  });
+    if (!animated_weight && dist > weight_trigger) {
+      animated_weight = true;
+      let weight_bar = new Chart(g2, {
+        type: "bar",
+        data: weight_chart_data,
+        options: weight_chart_options,
+      });
+      $("#weight").addClass("show-chart");
+      calculate_trigger_dist()
+    }
 
-  let memory_line = new Chart(g4, {
-    type: "line",
-    data: memory_line_data,
-    options: memory_line_options,
+    if (!animated_pvt && dist > pvt_trigger) {
+      animated_pvt = true;
+      let pvt_line = new Chart(g3, {
+        type: "line",
+        data: pvt_line_data,
+        options: pvt_line_options,
+      });
+      $("#pvt").addClass("show-chart");
+      calculate_trigger_dist()
+    }
+
+    if (!animated_memory && dist > memory_trigger) {
+      animated_memory = true;
+      let memory_line = new Chart(g4, {
+        type: "line",
+        data: memory_line_data,
+        options: memory_line_options,
+      });
+      $("#memory").addClass("show-chart");
+      calculate_trigger_dist()
+    }
   })
-
-
-
 })
 
 
 
+calculateAvgSleepColor = (num) => {
+  if (num == 4) {
+    avg_sleep_colors[0] = red;
+  } else if (num == 5) {
+    avg_sleep_colors[1] = blue;
+  } else if (num == 6) {
+    avg_sleep_colors[2] = yellow;
+  } else if (num == 7) {
+    avg_sleep_colors[3] = green;
+  } else {
+    avg_sleep_colors[4] = purple;
+  }
+}
 
 // Chart data here
+var avg_sleep_colors = [red_50, blue_50, yellow_50, green_50, purple_50];
+
 var avg_sleep_data = {
-  labels: ["Less than 5", "6 hrs", "7 hrs", "8 hrs", "9 or more"],
+  labels: ["Less than 4", "5 hrs", "6 hrs", "7 hrs", "8 or more"],
   datasets: [{
     data: [14, 26, 25, 29, 5],
-    label: "hello",
-    backgroundColor: [red, blue, yellow, green, purple],
+    backgroundColor: avg_sleep_colors,
     borderColor: [black, black, black, black, black],
-    borderWidth: 5,
+    borderWidth: 3,
   }]
 }
 
 var avg_sleep_options = {
   legend: {
-    position: "left",
-    fullWidth: true,
+    position: "right",
+    fullWidth: false,
+    onClick: null,
   },
   tooltips: {
     enabled: false,
   },
+  hover: {
+    animationDuration: 0,
+  },
   animation: {
     animateScale: true,
-    onProgress: function () {
+    onComplete: function () {
       var ctx = this.chart.ctx;
       ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontFamily, 'normal', Chart.defaults.global.defaultFontFamily);
       ctx.textAlign = 'center';
@@ -121,7 +180,7 @@ var avg_sleep_options = {
         for (var i = 0; i < dataset.data.length; i++) {
           var model = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model,
               total = dataset._meta[Object.keys(dataset._meta)[0]].total,
-              mid_radius = 20 + model.innerRadius + (model.outerRadius - model.innerRadius)/2,
+              mid_radius = model.innerRadius + (model.outerRadius - model.innerRadius)/2,
               start_angle = model.startAngle,
               end_angle = model.endAngle,
               mid_angle = start_angle + (end_angle - start_angle)/2;
@@ -152,21 +211,48 @@ var barData = {
 }
 
 var immune_bar_data = {
-  labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+  labels: ["0 days", "10 days", "20 days"],
   datasets: [{
-    label: "# of Votes",
-    data: [12, 19, 3, 5, 2, 3],
-    backgroundColor: [red, blue, yellow, green, purple, orange],
-    borderColor: [
-      "rgba(255,99,132,1)",
-      "rgba(54, 162, 235, 1)",
-      "rgba(255, 206, 86, 1)",
-      "rgba(75, 192, 192, 1)",
-      "rgba(153, 102, 255, 1)",
-      "rgba(255, 159, 64, 1)"
-    ],
+    label: "8 hours of sleep",
+    data: [0.14, 0.5, 0.6],
+    backgroundColor: [blue, blue, blue],
+    borderWidth: 1
+  }, {
+    label: "less sleep",
+    data: [0.14, 1.25, 0.8],
+    backgroundColor: [red, red, red],
     borderWidth: 1
   }]
+}
+
+var immune_bar_options = {
+  scales: {
+    yAxes: [{
+      ticks: {
+        beginAtZero:true
+      }
+    }]
+  },
+  tooltips: {
+    enabled: false,
+  },
+  animation: {
+    onProgress: function () {
+      var chartInstance = this.chart,
+          ctx = chartInstance.ctx;
+      ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "bottom";
+
+      this.data.datasets.forEach(function (dataset, i) {
+          var meta = chartInstance.controller.getDatasetMeta(i);
+          meta.data.forEach(function (bar, index) {
+              var data = dataset.data[index];
+              ctx.fillText(data, bar._model.x, bar._model.y - 5);
+          });
+      });
+    }
+  }
 }
 
 // WEIGHT BAR
@@ -229,6 +315,15 @@ var weight_chart_options = {
 }
 
 // PVT LINE
+var pvt_hour_data = {
+  3: [0, null, null, null, null, null, 9.7, null, null, 12, null, 14],
+  4: [0, null, null, null, null, null, 9.7, null, null, 12, null, 14],
+  5: [0, null, null, null, null, null, 9.7, null, null, 12, null, 14],
+  6: [0, null, null, null, null, null, 4, null, null, null, null, 8.5],
+  7: [0, null, null, null, null, null, 4, null, null, null, null, 8.5],
+  8: [0, null, null, null, null, null, 1, null, null, null, null, 2],
+}
+
 var pvt_line_data = {
   labels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
   datasets: [{
@@ -240,7 +335,7 @@ var pvt_line_data = {
     fill: false,
   }, {
     label: "4 hours per night",
-    data: [0, null, null, null, null, null, 9.7, null, null, 12, null, 14],
+    data: pvt_hour_data[4],
     borderColor: blue,
     pointBackgroundColor: blue,
     spanGaps: true,
