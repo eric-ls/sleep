@@ -81,7 +81,7 @@ $(document).ready(() => {
   let animated_pvt = false;
   let animated_memory = false;
 
-  const trigger_offset = 400;
+  const trigger_offset = 300;
 
   let pie_trigger, immune_trigger, weight_trigger, pvt_trigger, memory_trigger;
 
