@@ -21,23 +21,36 @@ Chart.defaults.global.defaultFontSize = 14;
 Chart.defaults.scale.gridLines.color = "rgba(236, 240, 241, 0.07)";
 Chart.defaults.scale.gridLines.zeroLineColor = "rgba(236, 240, 241, 0.3)";
 
+let selectedHour = 4;
 
 $(document).ready(() => {
+
+  if ($(window).scrollTop() != 0) {
+    $("body").css("overflow", "scroll");
+  }
+
+  let avg_sleep_pie, immune_bar, weight_bar, pvt_line, memory_line;
 
   let g0 = document.getElementById("avgSleep").getContext("2d");
   let g1 = document.getElementById("immune").getContext("2d");
   let g2 = document.getElementById("weight").getContext("2d");
   let g3 = document.getElementById("pvt").getContext("2d");
   let g4 = document.getElementById("memory").getContext("2d");
-  let selectedHour;
 
 
   $("#hour-select").change(function(e) {
     selectedHour = parseInt($(this).val());
 
     $(".hour-success-btn").addClass("show-btn");
+    $("body").css("overflow", "initial");
 
     calculateAvgSleepColor(selectedHour);
+    changeImmune(selectedHour);
+    changePVT(selectedHour);
+  })
+
+  $(".hour-success-btn").click(() => {
+    $("body").animate({scrollTop: $(".container").offset().top - 100}, '900', 'swing');
   })
 
   let changeBar = (newData) => {
@@ -45,6 +58,21 @@ $(document).ready(() => {
     immune_bar.update(500);
   }
 
+  let changePVT = (hours) => {
+    let newData = pvt_hour_data[hours];
+    let newLabel = `${hours} hours per night`;
+
+    pvt_line_data.datasets[1].data = newData;
+    pvt_line_data.datasets[1].label = newLabel;
+  }
+
+  let changeImmune = (hours) => {
+    let newData = immune_hour_data[hours];
+    let newLabel = `${hours} hours per night`;
+
+    immune_bar_data.datasets[0].data = newData;
+    immune_bar_data.datasets[0].label = newLabel;
+  }
 
   let animated_pie = false;
   let animated_immune = false;
@@ -72,7 +100,7 @@ $(document).ready(() => {
 
     if (!animated_pie && dist > pie_trigger) {
       animated_pie = true;
-      let avg_sleep_pie = new Chart(g0, {
+      avg_sleep_pie = new Chart(g0, {
         type: "doughnut",
         data: avg_sleep_data,
         options: avg_sleep_options,
@@ -83,7 +111,7 @@ $(document).ready(() => {
 
     if (!animated_immune && dist > immune_trigger) {
       animated_immune = true;
-      let immune_bar = new Chart(g1, {
+      immune_bar = new Chart(g1, {
         type: "bar",
         data: immune_bar_data,
         options: immune_bar_options,
@@ -94,7 +122,7 @@ $(document).ready(() => {
 
     if (!animated_weight && dist > weight_trigger) {
       animated_weight = true;
-      let weight_bar = new Chart(g2, {
+      weight_bar = new Chart(g2, {
         type: "bar",
         data: weight_chart_data,
         options: weight_chart_options,
@@ -105,7 +133,7 @@ $(document).ready(() => {
 
     if (!animated_pvt && dist > pvt_trigger) {
       animated_pvt = true;
-      let pvt_line = new Chart(g3, {
+      pvt_line = new Chart(g3, {
         type: "line",
         data: pvt_line_data,
         options: pvt_line_options,
@@ -116,7 +144,7 @@ $(document).ready(() => {
 
     if (!animated_memory && dist > memory_trigger) {
       animated_memory = true;
-      let memory_line = new Chart(g4, {
+      memory_line = new Chart(g4, {
         type: "line",
         data: memory_line_data,
         options: memory_line_options,
@@ -200,25 +228,25 @@ var avg_sleep_options = {
 
 
 
-
-var barData = {
-  3: [16, 5, 10, 3, 7, 6],
-  4: [2, 9, 2, 3, 2, 7],
-  5: [23, 4, 1, 6, 7, 8],
-  6: [4, 15, 6, 7, 1, 9],
-  7: [5, 10, 7, 8, 9, 10],
-  8: [10, 11, 12, 13, 14, 15],
+var immune_label = "4 hours of sleep";
+var immune_hour_data = {
+  4: [0.14, 0.5, 0.6],
+  5: [0.14, 0.5, 0.65],
+  6: [0.14, 0.76, 0.7],
+  7: [0.14, 0.9, 0.75],
+  8: [0.14, 1.25, 0.8],
 }
+var immune_data = immune_hour_data[4];
 
 var immune_bar_data = {
   labels: ["0 days", "10 days", "20 days"],
   datasets: [{
-    label: "8 hours of sleep",
-    data: [0.14, 0.5, 0.6],
+    label: immune_label,
+    data: immune_data,
     backgroundColor: [blue, blue, blue],
     borderWidth: 1
   }, {
-    label: "less sleep",
+    label: "8 hours of sleep",
     data: [0.14, 1.25, 0.8],
     backgroundColor: [red, red, red],
     borderWidth: 1
@@ -227,9 +255,19 @@ var immune_bar_data = {
 
 var immune_bar_options = {
   scales: {
+    xAxes: [{
+      scaleLabel: {
+        display: true,
+        labelString: "days after vaccine",
+      }
+    }],
     yAxes: [{
       ticks: {
         beginAtZero:true
+      },
+      scaleLabel: {
+        display: true,
+        labelString: "mean antibody tithers",
       }
     }]
   },
@@ -315,6 +353,7 @@ var weight_chart_options = {
 }
 
 // PVT LINE
+var pvt_label = "4 hours per night";
 var pvt_hour_data = {
   3: [0, null, null, null, null, null, 9.7, null, null, 12, null, 14],
   4: [0, null, null, null, null, null, 9.7, null, null, 12, null, 14],
@@ -323,6 +362,8 @@ var pvt_hour_data = {
   7: [0, null, null, null, null, null, 4, null, null, null, null, 8.5],
   8: [0, null, null, null, null, null, 1, null, null, null, null, 2],
 }
+
+pvt_data = pvt_hour_data[4];
 
 var pvt_line_data = {
   labels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
@@ -334,8 +375,8 @@ var pvt_line_data = {
     spanGaps: true,
     fill: false,
   }, {
-    label: "4 hours per night",
-    data: pvt_hour_data[4],
+    label: pvt_label,
+    data: pvt_data,
     borderColor: blue,
     pointBackgroundColor: blue,
     spanGaps: true,
@@ -345,6 +386,12 @@ var pvt_line_data = {
 
 var pvt_line_options = {
   scales: {
+    xAxes: [{
+    scaleLabel: {
+      display: true,
+      labelString: "Days",
+    }
+    }],
     yAxes: [{
       stacked: true,
       scaleLabel: {

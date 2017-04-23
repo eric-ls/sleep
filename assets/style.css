@@ -5,6 +5,7 @@ body {
   color: #ecf0f1;
   font-family: Lato, sans-serif;
   margin: 0;
+  overflow: hidden;
 }
 
 .bg-container {
@@ -99,7 +100,7 @@ canvas {
 
 .hour-btn-container {
   font-size: 28px;
-  margin: 150px auto 0;
+  margin: 100px auto 0;
   text-align: center;
 }
 
