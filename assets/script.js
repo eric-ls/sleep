@@ -24,10 +24,11 @@ Chart.defaults.scale.gridLines.zeroLineColor = "rgba(236, 240, 241, 0.3)";
 let selectedHour = 4;
 
 $(document).ready(() => {
-
-  if ($(window).scrollTop() != 0) {
-    $("body").css("overflow", "scroll");
-  }
+  setTimeout(() => {
+    if ($(window).scrollTop() != 0) {
+      $("body").css("overflow", "scroll");
+    }
+  }, 200)
 
   let avg_sleep_pie, immune_bar, weight_bar, pvt_line, memory_line;
 
@@ -317,6 +318,11 @@ var weight_chart_data = {
 }
 
 var weight_chart_options = {
+  title: {
+    display: true,
+    position: "top",
+    text: "Hunger after sleep deprivation",
+  },
   scales: {
     xAxes: [{
       barPercentage: 0.6,

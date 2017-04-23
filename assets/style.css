@@ -29,6 +29,7 @@ body {
 }
 
 canvas {
+  margin-top: 40px;
   min-height: 300px;
 }
 
@@ -41,6 +42,7 @@ canvas {
 .container {
   margin: 0 auto;
   max-width: 800px;
+  padding-bottom: 100px;
 }
 
 .chart {
