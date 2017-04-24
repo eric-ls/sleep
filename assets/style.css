@@ -164,3 +164,18 @@ p {
   font-weight: 300;
   line-height: 1.5;
 }
+
+.tips-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.tip {
+  padding: 0 15px;
+  width: 33.33%;
+}
+
+.tip h3 {
+  font-weight: 400;
+}
+
